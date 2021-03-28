@@ -11,8 +11,13 @@ for f in ${features[@]} ; do
 done
 
 for t in $@ ; do
-	topo2geo -i "${t}" `echo ${o//toponame/${t%.topojson}}`
+	topo2geo -i "${t}" `echo "${o//toponame/${t%.topojson}}"`
 done
-geojson-merge .mergeTopos/*.json > "${tempDir}/merged.json"
-geo2topo "${tempDir}/merged.json" > merged.topojson
+
+o=""
+for f in ${features[@]} ; do
+	geojson-merge .mergeTopos/*.${f}.json > "${tempDir}/merged.${f}.json"
+	o+=" ${f}=${tempDir}/merged.${f}.json"
+done
+geo2topo `echo "${o}"` > merged.topojson
 rm -r "${tempDir}"
